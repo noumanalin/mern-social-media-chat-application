@@ -1,7 +1,6 @@
 import userModel from '../model/user.model.js';
 import jwt from 'jsonwebtoken';
-import parser from 'ua-parser-js';
-import geoip from 'geoip-lite';
+import { UAParser } from 'ua-parser-js';
 
 
 // ---------------- Helper Functions -------------------------
@@ -25,7 +24,9 @@ const setCookies = (res, token, d) => {
 }
 
 const getClientInfo = (req) => {
-  const ua = parser(req.headers['user-agent']);
+  const parser = new UAParser(req.headers['user-agent']);
+  const ua = parser.getResult();
+
   return {
     browser: ua.browser.name || "Unknown",
     os: ua.os.name || "Unknown",
@@ -33,19 +34,7 @@ const getClientInfo = (req) => {
   };
 };
 
-// Extract user location from IP address
-const getUserLocation = (req) => {
-  const ip =
-    req.headers['x-forwarded-for']?.split(',')[0] || req.connection.remoteAddress;
-  
-  const geo = geoip.lookup(ip);
-  return {
-    ip,
-    country: geo?.country || 'Unknown',
-    city: geo?.city || 'Unknown',
-    region: geo?.region || 'Unknown'
-  };
-};
+
 // ---------------- Controller Functions -------------------------
 
 
@@ -104,17 +93,12 @@ export const login = async (req, res, next) => {
     }
 
     const { os, device, browser } = getClientInfo(req);
-    const { ip, country, city, region } = getUserLocation(req);
 
     const loginDetails = {
       time: new Date(),
       os,
       device,
       browser,
-      ip,
-      country,
-      city,
-      region
     };
 
     user.lastLogin = loginDetails;

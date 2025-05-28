@@ -3,9 +3,9 @@ import dotenv from 'dotenv'
 dotenv.config()
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import upload from 'express-fileupload'
+// import upload from 'express-fileupload'
 import { connectDB } from './config/connect.js'
-import { errorMiddleware } from './middlewares/error.middleware.js';
+import { errorMiddleware } from './middleware/error.middleware.js';
 import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 
@@ -26,7 +26,7 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true
 }))
-app.use(upload)
+// app.use(upload)
 
 app.use('/api/v1/auth/user', authRouter)
 app.use('/api/v1/user', userRouter)

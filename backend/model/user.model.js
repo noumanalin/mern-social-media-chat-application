@@ -1,9 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
-import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-
 const loginSchema = new Schema({
   time: { type: Date, default: Date.now },
   os: { type: String },

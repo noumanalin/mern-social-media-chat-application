@@ -1,7 +1,4 @@
 import userModel from '../model/user.model.js'
-import HttpError from '../model/error.model.js'
-import jwt from 'jsonwebtoken'
-import { redis } from '../lib/redis.js';
 
 
 
