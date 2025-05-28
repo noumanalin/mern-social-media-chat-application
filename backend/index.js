@@ -47,3 +47,21 @@ app.listen(PORT, () => {
 
 // Export app for Vercel
 export default app;
+
+// ============================================================================================
+// test on mobile phone
+// npm run dev -- --host=0.0.0.0
+
+// Press Win + R, type cmd hit Enter ipconfig
+
+// Find this line:
+
+// IPv4 Address. . . . . . . . . . . : 192.168.43.36
+
+// http://192.168.43.36:3000/api/v1/auth/user/test
+
+// server must be running with host set to 0.0.0.0
+// app.listen(3000, '0.0.0.0', () => {
+//   console.log("Server running on port 3000");
+// });
+// ============================================================================================

@@ -30,7 +30,7 @@ const getClientInfo = (req) => {
   return {
     browser: ua.browser.name || "Unknown",
     os: ua.os.name || "Unknown",
-    device: ua.device.type || "Unknown"
+    device: ua.device.type || "desktop"
   };
 };
 
@@ -120,4 +120,15 @@ export const login = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+
+// ================= Test =============
+export const testClientInfo = (req, res) => {
+  const clientInfo = getClientInfo(req);
+  res.json({
+    success: true,
+    message: "Client info fetched successfully.",
+    client: clientInfo
+  });
 };
