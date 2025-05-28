@@ -1,0 +1,29 @@
+# === Backend ===
+backend/node_modules/
+backend/.env
+backend/.env.local
+backend/.env.*.local
+backend/dist/
+backend/build/
+backend/logs/
+
+# === Client ===
+client/node_modules/
+client/.env
+client/.env.local
+client/.env.*.local
+client/dist/
+client/build/
+
+# === Global ===
+*.log
+.DS_Store
+.env
+.env.local
+.env.*.local
+
+# Optional: OS-specific & IDE junk
+.vscode/
+.idea/
+*.swp
+*.swo
