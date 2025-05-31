@@ -96,3 +96,63 @@ export const updateUserDisplayPicture = async (re, res, next) => {
         next(error)   
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================= 6. GET USER POSTS ================================================
+//  GET: api/users/:id/posts
+// 
+export const getUserPosts = async (req, res, next) => {
+    try {
+        const userId = req.id;
+        const posts = await userModel.findById(userId).populate({path:"posts", options:{sort:{createdAt:-1}}})
+
+        res.status(200).json({success:true, posts, message:"user posts"})
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ============================= 7. GET BOOKMARKS POSTS ================================================
+//  GET: api/user/user-bookmarks
+// PROTECTED
+export const getUserBookMarks = async (req, res, next) => {
+    try {
+        const userId = req.id;
+        const userBookMarks = await userModel.findById(userId).populate({path:"bookmarks", options:{sort:{createdAt:-1}}})
+        res.status(200).json({success:true, userBookMarks, message:"user bookmarks posts."})
+    } catch (error) {
+        next(error)
+    }
+}
