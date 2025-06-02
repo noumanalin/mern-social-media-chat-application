@@ -10,6 +10,8 @@ import authRouter from './routes/auth.route.js';
 import userRouter from './routes/user.route.js';
 import postRouter from './routes/post.routes.js';
 import commentRouter from './routes/comment.route.js'
+import messageRouter from './routes/message.route.js'
+import { server } from './socket/socket.js';
 
 const PORT = process.env.PORT || 3001;
 const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173/";
@@ -34,6 +36,7 @@ app.use('/api/v1/auth/user', authRouter)
 app.use('/api/v1/user', userRouter)
 app.use('/api/post', postRouter)
 app.use('/api/comment', commentRouter)
+app.use('/api/message', messageRouter)
 
 
 
@@ -44,7 +47,7 @@ app.use(errorMiddleware);
 
 
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`🚀 Server running on port: ${PORT}`);
     connectDB();
 });
