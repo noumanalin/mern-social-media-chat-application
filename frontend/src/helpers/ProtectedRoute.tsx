@@ -1,5 +1,8 @@
 
 import { Navigate, Outlet,  } from "react-router-dom";
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import Widgets from "../components/Widgets";
 
 function ProtectedRoute() {
   
@@ -9,7 +12,12 @@ function ProtectedRoute() {
 
   return (
     <>
-    <Outlet/>
+    <Navbar/>
+    <main>
+      <Sidebar/>
+      <Outlet/>
+      <Widgets/>
+    </main>
   </>
   );
 }
