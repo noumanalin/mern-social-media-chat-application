@@ -51,7 +51,8 @@ const Signup = () => {
         navigate("/login");
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.message || "Something went wrong!";
+      console.log(`ERROR::${error}`)
+      const msg = error?.response?.data?.message;
       setError(msg);
       toast.error(msg);
     }

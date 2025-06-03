@@ -1,6 +1,7 @@
-import CommentModel  from "../model/comment.model";
+import CommentModel from "../model/comment.model.js";
 import UserModel from "../model/user.model.js";
 import PostModel from "../model/post.model.js";
+
 
 // ============================= 1. CREATE COMMENT ================================================
 //  POST: api/comment/:id
