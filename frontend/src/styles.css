@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+@import "tailwindcss";
+@tailwind utilities;
+
+/* Define theme classes with static color values */
+.theme-blue {
+  --color-primary: #3385ff;
+  --color-primary-variant: rgba(51, 133, 255, 0.2);
+}
+
+.theme-red {
+  --color-primary: #df2d56;
+  --color-primary-variant: rgba(223, 45, 86, 0.2);
+}
+
+.theme-yellow {
+  --color-primary: #eca61c;
+  --color-primary-variant: rgba(236, 166, 28, 0.2);
+}
+
+.theme-green {
+  --color-primary: #04bb90;
+  --color-primary-variant: rgba(4, 187, 144, 0.2);
+}
+
+.theme-purple {
+  --color-primary: #b21fc9;
+  --color-primary-variant: rgba(178, 31, 201, 0.2);
+}
+
+/* Add this for Tailwind v4 compatibility */
+@layer utilities {
+  .bg-primary {
+    background-color: var(--color-primary);
+  }
+  
+  .text-primary {
+    color: var(--color-primary);
+  }
+  
+  .bg-primary-variant {
+    background-color: var(--color-primary-variant);
+  }
+  
+  .border-primary {
+    border-color: var(--color-primary);
+  }
+
+  .accent-primary {
+    accent-color: var(--color-primary);
+}
+}
+
+
+button {
+  cursor: pointer;
+}

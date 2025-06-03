@@ -6,7 +6,12 @@ const GuestRoute = () => {
   const token = false;
 
 
-  return user && token ? <Navigate to={"/"} /> : <Outlet />;
+  return user && token ? 
+  <Navigate to={"/"} /> 
+  : 
+  <div className="bg-gray-200 w-full h-screen flex items-center justify-center">
+    <Outlet />
+  </div> 
 };
 
 export default GuestRoute;

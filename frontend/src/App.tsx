@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import GuestRoute from "./helpers/GuestRoute";
+import { ToastContainer } from 'react-toastify';
 import Login from './pages/Login'
 import Signup from "./pages/Signup";
 import ProtectedRoute from "./helpers/ProtectedRoute";
@@ -9,14 +10,14 @@ import Home from "./pages/Home";
 import MessagesList from "./components/MessagesList";
 import Messages from "./pages/Messages";
 import Bookmarks from "./pages/Bookmarks";
+import './styles.css'
 
 
 function App() {
 
   return (
-    <>
-    app
-     <Routes>
+  <main className="theme-green">
+    <Routes>
       <Route element={<GuestRoute />} >
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} /> 
@@ -30,10 +31,11 @@ function App() {
         <Route path="/user/:id" element={<Profile/>} />
         <Route path="/post/:id" element={<SinglePost/>} />
       </Route>
-
-
+      
      </Routes>
-    </>
+     <ToastContainer  style={{ zIndex: 9999 }}/>
+    </main>
+
   )
 }
 

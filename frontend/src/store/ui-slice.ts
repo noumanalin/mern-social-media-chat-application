@@ -1,17 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
 
-interface Theme {
-  primaryColor: string
-  bgColor: string
-}
+// interface Theme {
+//   primaryColor: string
+//   bgColor: string
+// }
 
 interface UIState {
   themeModalIsOpen: boolean
   editProfileModalOpen: boolean
   editPostModalOpen: boolean
   editPostId: string
-  theme: Theme
+  // theme: Theme
 }
 
 const initialState: UIState = {
@@ -19,10 +19,10 @@ const initialState: UIState = {
   editProfileModalOpen: false,
   editPostModalOpen: false,
   editPostId: "",
-  theme: JSON.parse(localStorage.getItem("theme") || "null") || {
-    primaryColor: "",
-    bgColor: "",
-  },
+  // theme: JSON.parse(localStorage.getItem("theme") || "null") || {
+  //   primaryColor: "",
+  //   bgColor: "",
+  // },
 }
 
 const uiSlice = createSlice({
@@ -35,9 +35,9 @@ const uiSlice = createSlice({
     closeThemeModal: (state) => {
       state.themeModalIsOpen = false
     },
-    changeTheme: (state, action: PayloadAction<Theme>) => {
-      state.theme = action.payload
-    },
+    // changeTheme: (state, action: PayloadAction<Theme>) => {
+    //   state.theme = action.payload
+    // },
     openEditProfileModal: (state) => {
       state.editProfileModalOpen = true
     },
