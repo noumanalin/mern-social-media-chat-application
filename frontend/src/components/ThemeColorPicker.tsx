@@ -18,8 +18,8 @@ const ThemeColorPicker = () => {
     return localStorage.getItem("theme-color") || "green";
   });
 
-  const [mode, setMode] = useState<string>(() => {
-    return localStorage.getItem("theme-mode") || "light";
+  const [mode, setMode] = useState<any>(() => {
+    return localStorage.getItem("theme-mode");
   });
 
 
@@ -35,30 +35,31 @@ const ThemeColorPicker = () => {
     setTheme(color);
   };
 
-  const changeThemeMode = (newMode: string) => {
-    if (newMode === "dark") {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme-mode", "dark");
-      setMode("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme-mode", "");
-    }
-    
-  };
+const changeThemeMode = (newMode: string) => {
+  if (newMode === "dark") {
+    document.documentElement.classList.add("dark");
+    localStorage.setItem("theme-mode", "dark");
+    setMode("dark");
+  } else {
+    document.documentElement.classList.remove("dark");
+    localStorage.setItem("theme-mode", "light");
+    setMode("light"); 
+  }
+};
 
 
-//   const reload = 
 
-    useEffect(() => {
-    // Apply saved theme color
-    document.documentElement.classList.add(`theme-${theme}`);
-    
-    
-    if (mode === "dark") {
-      document.documentElement.classList.add("dark");
-    } 
-  }, []);
+useEffect(() => {
+  // Apply saved theme color
+  document.documentElement.classList.add(`theme-${theme}`);
+
+  if (mode === "dark") {
+    document.documentElement.classList.add("dark");
+  } else {
+    document.documentElement.classList.remove("dark"); 
+  }
+}, [mode, theme]); 
+
 
 
   return (

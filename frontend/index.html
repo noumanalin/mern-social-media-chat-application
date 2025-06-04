@@ -9,6 +9,17 @@
   </head>
   <body class="" >
     <div id="root"></div>
+
+    <script>
+  // Apply theme-mode before React loads
+    const savedColor = localStorage.getItem("theme-color") || "green";
+    const savedMode = localStorage.getItem("theme-mode") || "light";
+    
+    document.documentElement.classList.add(`theme-${savedColor}`);
+    if (savedMode === "dark") {
+      document.documentElement.classList.add("dark");
+    }
+  </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
