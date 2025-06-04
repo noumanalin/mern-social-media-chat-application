@@ -73,6 +73,26 @@ const userSlice = createSlice({
       localStorage.removeItem("currentUser");
       localStorage.removeItem("token");
     },
+
+    updateBookmarks: (state, action: PayloadAction<string>) => {
+    const postId = action.payload;
+    if (!state.currentUser?.bookmarks) return;
+
+    const index = state.currentUser.bookmarks.indexOf(postId);
+    if (index > -1) {
+      // Remove from bookmarks
+      state.currentUser.bookmarks.splice(index, 1);
+    } else {
+      // Add to bookmarks
+      state.currentUser.bookmarks.push(postId);
+    }
+
+    // Update localStorage
+    localStorage.setItem("currentUser", JSON.stringify(state.currentUser));
+  },
+
+
+
     setSocket: (state, action: PayloadAction<any>) => {
       state.socket = action.payload;
     },
@@ -88,5 +108,5 @@ const userSlice = createSlice({
   },
 });
 
-export const { loginSuccess, logout, setSocket, setOnlineUsers, updateUser } = userSlice.actions;
+export const { loginSuccess, logout, updateBookmarks, setSocket, setOnlineUsers, updateUser } = userSlice.actions;
 export default userSlice.reducer;

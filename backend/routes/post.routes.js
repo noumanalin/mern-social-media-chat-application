@@ -15,7 +15,7 @@ router.get('/following-posts', isLogedin, getFollowingPosts)
 router.get('/:id', isLogedin, getPost)
 router.patch('/:id', isLogedin, updatePost)
 router.delete('/:id', isLogedin, deletePost)
-router.get('/:id/like-dislike', isLogedin, likeDislikePost)
+router.put('/like-dislike/:id', isLogedin, likeDislikePost)
 router.get('/:id/add-bookmark', isLogedin, addBookMarkPost)
 
 

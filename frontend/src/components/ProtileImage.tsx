@@ -1,3 +1,4 @@
+import { CircleUserRound } from "lucide-react"
 import React from "react"
 
 interface ProtileImageProps {
@@ -6,7 +7,7 @@ interface ProtileImageProps {
 
 const ProtileImage: React.FC<ProtileImageProps> = ({ image }) => {
     if(!image){
-        return <p>No Image</p>
+        return <span className="text-primary"><CircleUserRound size={40} /></span>
     }
   return (
     <img src={image} alt="" />

@@ -12,7 +12,7 @@ const TrimText: React.FC<TrimTextProps> = ({ text, maxlength }) => {
     <>
       {text.length > maxlength ? (
         <>
-          {text.substring(0, maxlength)}... <span>read more</span>
+          {text.substring(0, maxlength)} <strong>Read More ...</strong>
         </>
       ) : (
         text

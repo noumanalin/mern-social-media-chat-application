@@ -137,16 +137,22 @@ export const getPosts = async (req, res, next) => {
   try {
     const posts = await PostModel.find()
       .sort({ createdAt: -1 })
-      .populate("creator", "name image")
+      .populate({
+        path: "creator",
+        select: "userName profilePhoto",
+        model: "User" 
+      })
       .populate({
         path: "comments",
         populate: {
           path: "creator",
-          select: "name image"
+          select: "userName profilePhoto",
+          model: "User"
         }
       });
 
     console.log('Found posts:', posts.length); // Debug logging
+    console.log("Sample post creator:", posts[0].creator);
     res.status(200).json({ success: true, posts });
   } catch (error) {
     console.error('Error in getPosts:', error);
@@ -352,24 +358,40 @@ export const getFollowingPosts = async (req, res, next) => {
 
 
 // ============================= 7. LIKE/DISLIKE POST ================================================
-//  GET: api/post/like-dislike/:id
+//  PUT: api/post/like-dislike/:id
 // PROTECTED
 export const likeDislikePost = async (req, res, next) => {
     try {
         const postId = req.params.id;
         const userId = req.id;
-        const post = await PostModel.findById(postId)
+        const post = await PostModel.findById(postId);
 
-        if(post?.likes.includes(userId)){
-            updatePost = await PostModel.findByIdAndUpdate(postId, {$pull: {likes: userId}}, {new: true})
-            return res.status(200).json({success:true, message:"Post remove from likes", updatePost})
-        } else {
-            updatePost = await PostModel.findByIdAndUpdate(postId, {$push: {likes: userId}}, {new: true})
-            return res.status(200).json({success:true, message:"Post liked", updatePost})
-
+        if (!post) {
+            return res.status(404).json({ success: false, message: "Post not found" });
         }
+
+        let updatePost;
+        if (post.likes.includes(userId)) {
+            updatePost = await PostModel.findByIdAndUpdate(
+                postId,
+                { $pull: { likes: userId } },
+                { new: true }
+            ).populate('likes', 'name image'); // Populate if needed
+        } else {
+            updatePost = await PostModel.findByIdAndUpdate(
+                postId,
+                { $push: { likes: userId } },
+                { new: true }
+            ).populate('likes', 'name image');
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: post.likes.includes(userId) ? "Post unliked" : "Post liked",
+            updatePost
+        });
     } catch (error) {
-        next(error)
+        next(error);
     }
 }
 
