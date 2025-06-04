@@ -1,10 +1,8 @@
 import UserModel from "../model/user.model.js";
 import PostModel from "../model/post.model.js";
-
-// import cloudinary from '../utils/cloudinary.config.js
-import fs from 'fs';
-import path from 'path'
-
+import CommentModel from "../model/comment.model.js";
+import sharp from "sharp";
+import cloudinary from "../lib/cloudinary.js";
 
 // ============================= 1. CREATE POST ================================================
 //  POST: api/post/
@@ -12,27 +10,79 @@ import path from 'path'
 export const createPost = async (req, res, next) => {
     try {
         const userId = req.id;
-        const {body} = req.body;
-        
-        if(!body){
-            return res.status(400).json({success:false, message:"Please fill the text field and choose image"})
+        const { body } = req.body;
+        const image = req.file;
+
+        // Validation
+        if (!body || !image) {
+            return res.status(400).json({
+                success: false,
+                message: "Please provide both text content and an image"
+            });
         }
 
-        if(!req.file.image){
-            return res.status(404).json({success:false})
-        } else {
-            const {postImage} = req.file
-            if(postImage > 100000){
-                return res.status().json({success:false, message:"Post picture is too big, it should be less than"})
-            }
+        // Validate image size (2MB max)
+        if (image.size > 2 * 1024 * 1024) {
+            return res.status(400).json({
+                success: false,
+                message: "Image size should be less than 2MB"
+            });
         }
 
+        // Optimize image with Sharp
+        const optimizedImageBuffer = await sharp(image.buffer)
+            .resize(800, 800, {  // Resize to max 800x800
+                fit: sharp.fit.inside,
+                withoutEnlargement: true
+            })
+            .jpeg({ 
+                quality: 80,  // Reduce quality to 80%
+                progressive: true 
+            })
+            .toBuffer();
+
+        // Upload to Cloudinary
+        const cloudinaryResult = await new Promise((resolve, reject) => {
+            cloudinary.uploader.upload_stream(
+                {
+                    resource_type: "image",
+                    folder: "social-media/posts",
+                    public_id: `${userId}_${Date.now()}`,
+                    overwrite: true
+                },
+                (error, result) => {
+                    if (error) reject(error);
+                    else resolve(result);
+                }
+            ).end(optimizedImageBuffer);
+        });
+
+        // Create new post
+        const newPost = await PostModel.create({
+            creator: userId,
+            body,
+            image: cloudinaryResult.secure_url,
+            likes: [],
+            comments: []
+        });
+
+        // Update user's posts array
+        await UserModel.findByIdAndUpdate(
+            userId,
+            { $push: { posts: newPost._id } },
+            { new: true }
+        );
+
+        return res.status(201).json({
+            success: true,
+            message: "Post created successfully",
+            post: newPost
+        });
 
     } catch (error) {
-        next(error)
+        next(error);
     }
-}
-
+};
 
 
 
@@ -149,32 +199,98 @@ export const deletePost = async (req, res, next) => {
     try {
         const userId = req.id;
         const postId = req.params.id;
-        const post = await PostModel.findById(postId)
-        if(!post){
-            return res.status(404).json({success:false, message:"❌ The you try to delete is not avilable"})
+        
+        // Find the post with comments populated
+        const post = await PostModel.findById(postId).populate('comments');
+        if (!post) {
+            return res.status(404).json({
+                success: false,
+                message: "❌ The post you tried to delete is not available"
+            });
         }
 
-        if(post?.creator != userId ){
-            return res.status(403).json({success:false, message:"❌ You can't delete other user's post"})
+        // Check ownership
+        if (post.creator.toString() !== userId) {
+            return res.status(403).json({
+                success: false,
+                message: "❌ You can't delete other user's post"
+            });
         }
 
-        const deletePost = await PostModel.findByIdAndDelete(postId);
-        // Remove Id of that Post from User's Model, Posts Field
-        // await UserModel.findByIdAndUpdate(post?.creator, { $pull: {posts: post?._id }})
-        // or
-        let user = await UserModel.findById(userId);
-        user.posts = user.posts.filter(id => id.toString() !== postId);
-        await user.save();
+        // 1. Delete image from Cloudinary if it exists
+        if (post.image) {
+            try {
+                const imageUrl = post.image;
+                const publicId = imageUrl.split('/').slice(-2).join('/').split('.')[0];
+                
+                await new Promise((resolve, reject) => {
+                    cloudinary.uploader.destroy(publicId, (error, result) => {
+                        if (error) {
+                            console.error('Cloudinary deletion error:', error);
+                            reject(error);
+                        } else {
+                            console.log(`Deleted image from Cloudinary: ${publicId}`);
+                            resolve(result);
+                        }
+                    });
+                });
+            } catch (cloudinaryError) {
+                console.error('Failed to delete Cloudinary image:', cloudinaryError);
+                // Continue with post deletion even if image deletion fails
+            }
+        }
 
-        // Delete comment related to that Post
+        // 2. Delete all associated comments
+        if (post.comments && post.comments.length > 0) {
+            try {
+                await CommentModel.deleteMany({ 
+                    _id: { $in: post.comments } 
+                });
+                
+                // Remove these comments from users' comments arrays
+                await UserModel.updateMany(
+                    { comments: { $in: post.comments } },
+                    { $pull: { comments: { $in: post.comments } } }
+                );
+            } catch (commentsError) {
+                console.error('Failed to delete comments:', commentsError);
+                // Continue with post deletion even if comments deletion fails
+            }
+        }
 
+        // 3. Delete the post
+        const deletedPost = await PostModel.findByIdAndDelete(postId);
 
-        res.status(200).json({success:true, message:"Post deleted successfully", post:deletePost})
+        // 4. Remove post from creator's posts array
+        await UserModel.findByIdAndUpdate(
+            userId,
+            { $pull: { posts: postId } },
+            { new: true }
+        );
+
+        // 5. Remove post from bookmarks of all users
+        await UserModel.updateMany(
+            { bookmarks: postId },
+            { $pull: { bookmarks: postId } }
+        );
+
+        // 6. Remove post from likes of all users
+        await UserModel.updateMany(
+            { likedPosts: postId },
+            { $pull: { likedPosts: postId } }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Post and all associated data deleted successfully",
+            post: deletedPost
+        });
 
     } catch (error) {
-        next(error)
+        console.error('Error in deletePost:', error);
+        next(error);
     }
-}
+};
 
 
 
