@@ -7,12 +7,11 @@ import ProfileImage from './ProtileImage';
 interface CreatePostProps {
   createNewPost: (formData: FormData) => void;
   error: string;
-  isLoading: boolean;
 }
 
-const CreatePost = ({ createNewPost, error, isLoading }: CreatePostProps) => {
+const CreatePost = ({ createNewPost, error }: CreatePostProps) => {
   const profileImage = useSelector((state: RootState) => state?.user?.currentUser?.profilePhoto);
-  const [content, setContent] = useState<string>("");
+  const [body, setBody] = useState<string>("");
   const [image, setImage] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,13 +19,13 @@ const CreatePost = ({ createNewPost, error, isLoading }: CreatePostProps) => {
     e.preventDefault();
     
     const formData = new FormData();
-    formData.append("content", content);
+    formData.append("body", body);
     if (image) {
       formData.append("image", image);
     }
 
     createNewPost(formData);
-    setContent("");
+    setBody("");
     setImage(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -51,18 +50,34 @@ const CreatePost = ({ createNewPost, error, isLoading }: CreatePostProps) => {
               name="text"
               id="text"
               placeholder="What's on your mind?"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
               required
             />
           </div>
 
-          <div className="flex justify-end items-center gap-3 mt-3">
-            {image && <span>{image.name}</span>}
-            <div>
+          <div className="flex justify-between items-center gap-3 mt-3">
+              {image ? (
+              <div className="flex items-center gap-1.5">
+
+                <div className="w-50 h-30">
+                  <img
+                    src={URL.createObjectURL(image)}
+                    alt="Preview"
+                    className="w-full h-full object-cover rounded"
+                  />
+                </div>
+
+                {image && <span>{image.name}</span>}
+              </div>
+             ): <div></div>}
+
+            <div className="flex items-center gap-2">
+              <div>
               <input
                 type="file"
                 id="post_image"
+                name="image"
                 ref={fileInputRef}
                 hidden
                 accept="image/*"
@@ -77,15 +92,35 @@ const CreatePost = ({ createNewPost, error, isLoading }: CreatePostProps) => {
             <button
               type="submit"
               className='px-3 py-2 bg-primary text-gray-200'
-              disabled={isLoading}
             >
-              {isLoading ? "Posting..." : "Post"}
+              {"Post"}
             </button>
+            </div>
           </div>
         </form>
+
+ 
+
+
       </div>
     </>
   );
 };
 
 export default CreatePost;
+
+
+
+
+
+
+
+// {image && (
+//   <div className="w-20 h-20">
+//     <img
+//       src={URL.createObjectURL(image)}
+//       alt="Preview"
+//       className="w-full h-full object-cover rounded"
+//     />
+//   </div>
+// )}

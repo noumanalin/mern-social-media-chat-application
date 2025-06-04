@@ -6,12 +6,20 @@ import axios from "axios";
 import CreatePost from "../components/CreatePost";
 import Feeds from "../components/Feeds";
 
+interface User {
+  _id: string;
+  name: string;
+  image: string;
+}
+
 interface Post {
-  id: string;
-  content: string;
+  _id: string;
+  body: string;
   image?: string;
   createdAt: string;
-  // Add other post properties as needed
+  creator: User;
+  likes: string[];
+  comments: any[];
 }
 
 const Home = () => {
@@ -25,7 +33,7 @@ const Home = () => {
     setIsLoading(true);
     
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/posts`, 
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/post`, 
         formData,
         {
           withCredentials: true,
@@ -42,6 +50,7 @@ const Home = () => {
         toast.success(response.data.message || "Post created successfully!");
       }
     } catch (error: any) {
+      console.error('Create post error:', error);
       const errorMessage = error.response?.data?.message || "Failed to create post";
       toast.error(errorMessage);
       setError(errorMessage);
@@ -50,43 +59,32 @@ const Home = () => {
     }
   };
 
-  // ====================================================================================================================
-  const getPosts = async () =>{
-    setIsLoading(true);
-    try {
-      const res =  await axios.post(`${import.meta.env.VITE_API_URL}/posts`, 
-        formData,
-        {
-          withCredentials: true,
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setPosts(res?.data?.posts)
+const getPosts = async () => {
+  setIsLoading(true);
+  try {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/post/all-posts`, {
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log('Posts data:', res.data); // Add logging
+    setPosts(res?.data?.posts || []);
+  } catch (error: any) {
+    console.error('Error fetching posts:', error);
+    toast.error(error.response?.data?.message || "Failed to fetch posts");
+  } finally {
     setIsLoading(false);
-
-    } catch (error) {
-      toast.error()
-    setIsLoading(false);
-
-    }
   }
+}
+  useEffect(() => {
+    getPosts();
+  }, []);
 
-
-  useEffect(()=>{
-    getPosts()
-  }, [setPosts])
   return (
     <div>
-      <CreatePost createNewPost={createNewPost} error={error} isLoading={isLoading} />
-      <Feeds posts={posts} setPosts={setPosts} />
-      {/* Render posts here */}
-      {posts.map(post => (
-        <div key={post.id}>{post.content}</div>
-      ))}
+      <CreatePost createNewPost={createNewPost} error={error}  />
+      {isLoading ? <div>Loading posts...</div> : <Feeds posts={posts} />}
     </div>
   );
 };

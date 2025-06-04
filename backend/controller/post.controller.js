@@ -3,6 +3,7 @@ import PostModel from "../model/post.model.js";
 import CommentModel from "../model/comment.model.js";
 import sharp from "sharp";
 import cloudinary from "../lib/cloudinary.js";
+import mongoose from "mongoose";
 
 // ============================= 1. CREATE POST ================================================
 //  POST: api/post/
@@ -101,6 +102,10 @@ export const createPost = async (req, res, next) => {
 export const getPost = async (req, res, next) => {
     try {
         const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: 'Invalid post ID' });
+        }
+
         const post = await PostModel.findById(id).populate("creator").populate({
             path:"comments", options:{ sort: {createdAt: -1 }}
         })
@@ -126,16 +131,29 @@ export const getPost = async (req, res, next) => {
 
 
 // ============================= 3. GET POSTS ================================================
-//  GET: api/posts
+//  GET: api/post/all-posts
 // PROTECTED
 export const getPosts = async (req, res, next) => {
-    try {
-        const posts = await PostModel.find().sort({ createdAt: -1})
-        res.status(200).json({success:true, posts})
-    } catch (error) {
-        next(error)
-    }
-}
+  try {
+    const posts = await PostModel.find()
+      .sort({ createdAt: -1 })
+      .populate("creator", "name image")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "creator",
+          select: "name image"
+        }
+      });
+
+    console.log('Found posts:', posts.length); // Debug logging
+    res.status(200).json({ success: true, posts });
+  } catch (error) {
+    console.error('Error in getPosts:', error);
+    next(error);
+  }
+};
+
 
 
 

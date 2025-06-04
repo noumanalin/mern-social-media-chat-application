@@ -1,14 +1,38 @@
-import Feed from './Feed.tsx'
+import React from 'react'
+import Feed from './Feed'
 
-const Feeds = ({posts}) => {
-    if(posts?.length < 1 ){
-        return <p>No posts found.</p>
-    }
+interface User {
+  _id: string;
+  name: string;
+  image: string;
+}
+
+interface Post {
+  _id: string;
+  body: string;
+  image?: string;
+  createdAt: string;
+  creator: User;
+  likes: string[];
+  comments: any[];
+}
+
+
+
+interface FeedsProps {
+  posts: Post[]
+}
+
+const Feeds: React.FC<FeedsProps> = ({ posts }) => {
+  if (!posts || posts.length === 0) {
+    return <p>No posts found.</p>
+  }
+
   return (
     <div>
-        { posts?.map((posts, i)=> <Feed key={i} post={post} />)
-
-        }
+      {posts.map((post) => (
+        <Feed key={post._id} post={post} />
+      ))}
     </div>
   )
 }
