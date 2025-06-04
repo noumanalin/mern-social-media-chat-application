@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { userActions } from "../store/user-slice";
+import { loginSuccess } from "../store/user-slice";
 
 interface LoginData {
   email: string;
@@ -20,8 +20,8 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string>("");
-  const dispatch = useDispatch()
-
+  const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,10 +30,14 @@ const Login = () => {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    
+    // Clear error when typing
+    if (error) setError("");
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await axios.post(
@@ -42,16 +46,31 @@ const Login = () => {
         { withCredentials: true }
       );
 
-      if (response.status === 200 || response.data?.success) {
+      if (response.data?.success) {
+        const { user, token } = response.data;
+        
+        // Dispatch login success with both user and token
+        dispatch(loginSuccess({ user, token }));
+        
+        // Store in localStorage if rememberMe is checked
+        if (formData.rememberMe) {
+          localStorage.setItem("currentUser", JSON.stringify(user));
+          localStorage.setItem("token", token);
+        } else {
+          // Use sessionStorage for temporary session
+          sessionStorage.setItem("currentUser", JSON.stringify(user));
+          sessionStorage.setItem("token", token);
+        }
+
         toast.success("Login successful!");
-        dispatch(userActions.changeCurrentUser(response?.data))
-        localStorage.setItem("currentUser", JSON.stringify(response?.data))
         navigate("/");
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.message || "Login failed!";
-      setError(msg);
-      toast.error(msg);
+      const errorMsg = error.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 

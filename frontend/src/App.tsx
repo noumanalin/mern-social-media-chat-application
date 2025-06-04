@@ -8,6 +8,7 @@ import SinglePost from "./pages/SinglePost";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import MessagesList from "./components/MessagesList";
+import Logout from './pages/Logout'
 import Messages from "./pages/Messages";
 import Bookmarks from "./pages/Bookmarks";
 import './styles.css'
@@ -16,7 +17,7 @@ import './styles.css'
 function App() {
 
   return (
-  <main className="theme-green">
+  <main className="no-scrollbar">
     <Routes>
       <Route element={<GuestRoute />} >
             <Route path='/login' element={<Login />} />
@@ -30,6 +31,7 @@ function App() {
         <Route path="/bookmarks" element={<Bookmarks/>} />
         <Route path="/user/:id" element={<Profile/>} />
         <Route path="/post/:id" element={<SinglePost/>} />
+        <Route path="/logout" element={<Logout />} />
       </Route>
       
      </Routes>

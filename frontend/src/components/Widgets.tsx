@@ -1,7 +1,7 @@
 
 const Widgets = () => {
   return (
-    <div>Widgets</div>
+    <div className="w-full h-1/2 bg-white dark:bg-gray-700">Widgets</div>
   )
 }
 

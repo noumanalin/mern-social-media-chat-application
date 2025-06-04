@@ -1,6 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
 @tailwind utilities;
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* Define theme classes with static color values */
 .theme-blue {
@@ -28,7 +29,6 @@
   --color-primary-variant: rgba(178, 31, 201, 0.2);
 }
 
-/* Add this for Tailwind v4 compatibility */
 @layer utilities {
   .bg-primary {
     background-color: var(--color-primary);
@@ -51,7 +51,114 @@
 }
 }
 
+/*==========================================================
+
+==========================================================*/
 
 button {
   cursor: pointer;
+}
+
+*::-webkit-scrollbar{
+  display: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE/Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.sidebar-menu {
+  transition: color 0.5s ease-in-out;
+}
+
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+  @apply bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/*==========================================================
+MAIN AREA
+==========================================================*/
+.main {
+  margin: 5rem 0;
+}
+
+.main__container {
+  display: grid;
+  grid-template-columns: 18rem auto 25rem;
+  align-items: start;
+  gap: 1.2rem;
+  margin-top: 1.2rem;
+  position: relative;
+}
+
+/*==========================================================
+MEDIA QUERIES (small screens)
+==========================================================*/
+@media screen and (max-width: 600px) {
+
+  .widgets {
+    display: none;
+  }
+
+  .main__container {
+    grid-template-columns: 1fr;
+  }
+
+
+  .sidebar {
+    position: fixed;
+    top: 90%;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 5rem;
+    flex-direction: row;
+    background: var(--color-gray-0);
+    border-radius: 3rem;
+    gap: 1.5rem;
+    box-shadow: 0 -1rem 2rem rgba(0, 0, 0, 0.15);
+    align-items: center;
+  }
+
+  .sidebar p {
+    display: none;
+  }
+
+  .sidebar a {
+    border-radius: 50%;
+    width: 3.7rem;
+    height: 3.7rem;
+    background: var(--color-gray-100);
+    display: grid;
+    place-items: center;
+  }
+
+  .sidebar a.active {
+    padding: 0;
+    display: grid;
+    place-items: center;
+  }
+
+
+  .theme__container {
+    width: auto;
+  }
+
+  .editProfile__container {
+    width: var(--container-w-sm);
+  }
+
+  
+.editPost__container {
+  width: var(--container-w-sm);
+}
 }
