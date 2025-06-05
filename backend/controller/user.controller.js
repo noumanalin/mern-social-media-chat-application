@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import userModel from '../model/user.model.js'
 
 
@@ -145,14 +146,37 @@ export const getUserPosts = async (req, res, next) => {
 
 
 // ============================= 7. GET BOOKMARKS POSTS ================================================
-//  GET: api/user/user-bookmarks
+//  GET: /v1/user/bookmarks
 // PROTECTED
 export const getUserBookMarks = async (req, res, next) => {
     try {
-        const userId = req.id;
-        const userBookMarks = await userModel.findById(userId).populate({path:"bookmarks", options:{sort:{createdAt:-1}}})
-        res.status(200).json({success:true, userBookMarks, message:"user bookmarks posts."})
+        const userId = req.params.id; 
+        
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ success: false, message: "Invalid user ID" });
+        }
+
+        const user = await userModel.findById(userId)
+            .populate({
+                path: "bookmarks",
+                populate: {
+                    path: "creator",
+                    select: "userName _id profilePhoto"
+                },
+                options: { sort: { createdAt: -1 } }
+            });
+            
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        res.status(200).json({
+            success: true,
+            bookmarks: user.bookmarks,
+            message: "User bookmarked posts retrieved successfully"
+        });
     } catch (error) {
-        next(error)
+        console.error('Error fetching bookmarks:', error);
+        next(error);
     }
 }

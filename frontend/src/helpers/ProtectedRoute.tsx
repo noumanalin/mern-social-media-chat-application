@@ -24,10 +24,6 @@ function ProtectedRoute() {
         {/* Main Content */}
         <section className="col-span-1 md:col-span-3 lg:col-span-4 p-4 mx h-screen overflow-y-scroll no-scrollbar w-full">
           <Outlet />
-          {/* Demo content - replace with actual content */}
-          <div className="h-screen w-full bg-amber-500 mt-4"></div>
-          <div className="h-screen w-full bg-red-500 mt-4"></div>
-          <div className="h-screen w-full bg-green-500 mt-4"></div>
         </section>
 
 

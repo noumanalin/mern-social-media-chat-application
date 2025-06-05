@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import CreatePost from "../components/CreatePost";
 import Feeds from "../components/Feeds";
+import FeedSkeleton from "../components/FeedSkeleton";
 
 interface User {
   _id: string;
@@ -84,7 +85,13 @@ const getPosts = async () => {
   return (
     <div>
       <CreatePost createNewPost={createNewPost} error={error}  />
-      {isLoading ? <div>Loading posts...</div> : <Feeds posts={posts} />}
+
+      {isLoading ? (
+      [...Array(3)].map((_, i) => <FeedSkeleton key={i} />)
+    ) : (
+      <Feeds posts={posts} />
+    )}
+
     </div>
   );
 };

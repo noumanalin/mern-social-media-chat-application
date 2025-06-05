@@ -12,7 +12,7 @@ router.patch('/:id', isLogedin, editProfile)
 router.get('/follow-unfollow/:id', isLogedin, followUnFollowUser)
 router.post('/upload/user-dp', isLogedin, updateUserDisplayPicture)
 router.get('/:id/posts', getUserPosts)
-router.get('/user-bookmarks', isLogedin, getUserBookMarks)
+router.get('/:id/bookmarks', isLogedin, getUserBookMarks)
 
 
 export default router;

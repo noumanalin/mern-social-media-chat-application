@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/', isLogedin, upload.single('image'), createPost)
 router.get('/all-posts', getPosts)
 router.get('/following-posts', isLogedin, getFollowingPosts)
-router.get('/:id', isLogedin, getPost)
+router.get('/:id',  getPost)
 router.patch('/:id', isLogedin, updatePost)
 router.delete('/:id', isLogedin, deletePost)
 router.put('/like-dislike/:id', isLogedin, likeDislikePost)

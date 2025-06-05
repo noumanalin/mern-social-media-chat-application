@@ -106,13 +106,21 @@ export const getPost = async (req, res, next) => {
             return res.status(400).json({ message: 'Invalid post ID' });
         }
 
-        const post = await PostModel.findById(id).populate("creator").populate({
-            path:"comments", options:{ sort: {createdAt: -1 }}
-        })
+        const post = await PostModel.findById(id)
+            .populate("creator")
+            .populate({
+                path: "comments",
+                populate: {
+                    path: "author",
+                    select: "userName _id profilePhoto"
+                },
+                options: { sort: { createdAt: -1 } }
+            });
 
-        res.status(200).json({success:true, post})
+        res.status(200).json({success: true, post});
     } catch (error) {
-        next(error)
+        console.log(`getPost Error:: ${error}`);
+        next(error);
     }
 }
 
@@ -145,8 +153,8 @@ export const getPosts = async (req, res, next) => {
       .populate({
         path: "comments",
         populate: {
-          path: "creator",
-          select: "userName profilePhoto",
+          path: "author",
+          select: "userName _id profilePhoto",
           model: "User"
         }
       });
@@ -175,8 +183,8 @@ export const getPosts = async (req, res, next) => {
 
 
 
-// ============================= 4. UPDATE POSTS ================================================
-//  PATCH: api/posts/:id
+// ============================= 4. UPDATE POST ================================================
+//  PATCH: api/post/:id
 // PROTECTED
 export const updatePost = async (req, res, next) => {
     try {
