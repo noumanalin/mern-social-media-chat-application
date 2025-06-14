@@ -39,14 +39,14 @@ const Sidebar = () => {
               
             </NavLink>
           ))
-        }
+        }   
 
-        <div  onClick={() => openModal()} 
+        <button  onClick={() => openModal()} 
         className={ `capitalize md:w-full flex gap-2 py-6 px-4 rounded-xl hover:bg-primary-variant cursor-pointer`}
         >
         <PaintbrushVertical/>
         <span className="hidden md:inline">Theme</span>
-        </div>
+        </button>
       </div>
 
 

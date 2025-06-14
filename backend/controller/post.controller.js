@@ -16,6 +16,7 @@ export const createPost = async (req, res, next) => {
 
         // Validation
         if (!body || !image) {
+            console.log(`create post empty body, image`)
             return res.status(400).json({
                 success: false,
                 message: "Please provide both text content and an image"
@@ -82,6 +83,7 @@ export const createPost = async (req, res, next) => {
 
     } catch (error) {
         next(error);
+        console.log(`createPost Error:: ${error}`)
     }
 };
 
@@ -194,6 +196,7 @@ export const updatePost = async (req, res, next) => {
         if(!body){
             return res.status(403).json({success:false, message:"❌ Text field of post is empty"})
         }
+        
         const post = await PostModel.findById(postId)
         if(!post){
             return res.status(404).json({success:false, message:"❌ The you try to update is not avilable"})
@@ -242,12 +245,12 @@ export const deletePost = async (req, res, next) => {
         }
 
         // Check ownership
-        if (post.creator.toString() !== userId) {
-            return res.status(403).json({
-                success: false,
-                message: "❌ You can't delete other user's post"
-            });
-        }
+        // if (post.creator !== userId) {
+        //     return res.status(403).json({
+        //         success: false,
+        //         message: "❌ You can't delete other user's post"
+        //     });
+        // }
 
         // 1. Delete image from Cloudinary if it exists
         if (post.image) {

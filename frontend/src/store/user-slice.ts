@@ -8,7 +8,7 @@ interface LoginHistory {
   browser: string;
 }
 
-interface User {
+export interface User {
   _id: string;
   userName: string;
   email: string;
@@ -48,6 +48,7 @@ const safeParse = (item: string | null) => {
 const initialState: UserState = {
   currentUser: safeParse(localStorage.getItem("currentUser")),
   token: localStorage.getItem("token"),
+
   socket: null,
   onlineUsers: [],
 };

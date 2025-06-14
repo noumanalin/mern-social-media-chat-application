@@ -1,17 +1,14 @@
 import mongoose from 'mongoose';
-import userModel from '../model/user.model.js'
-
-
-
-// ---------------- Helper Functions -------------------------
+import userModel from '../model/user.model.js';
+import cloudinary from '../lib/cloudinary.js';
 
 // ---------------- Controller Functions -------------------------
 
-// =============== 1. Get User Profile By ID ============================================================
+// =============== 1. Get User Profile By ID ======================================================
 export const getUserProfileByID = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const user = await userModel.findById(id).select("-password -bookmarks -loginHistory");
+    const user = await userModel.findById(id).select("-password");
 
     if (!user) {
       return res.status(404).json({ success: false, message: "No user found with that ID" });
@@ -23,17 +20,25 @@ export const getUserProfileByID = async (req, res, next) => {
   }
 };
 
+// =============== 2. Get Registered Users ========================================================
+export const getSegistedUsers = async (req, res, next) => {
+  try {
+    const users = await userModel.find({})
+      .select("userName profilePhoto bio followers followings")
+      .sort({ registeredAt: -1 })
+      .limit(20); // Limit to 20 recent users
 
-// =============== 2. Get Segisted Users ============================================================
-export const getSegistedUsers = async (re, res, next) => {
-    try {
-        
-    } catch (error) {
-        next(error) 
-    }
-}
+    res.status(200).json({ 
+      success: true, 
+      count: users.length,
+      users 
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-// =============== 3. Edit Profile ============================================================
+// =============== 3. Edit Profile ================================================================
 export const editProfile = async (req, res, next) => {
   try {
     const { userName, bio } = req.body;
@@ -50,8 +55,7 @@ export const editProfile = async (req, res, next) => {
   }
 };
 
-
-// =============== 4. Follow | Unfollow User  ============================================================
+// =============== 4. Follow | Unfollow User ======================================================
 export const followUnFollowUser = async (req, res, next) => {
   try {
     const currentUserId = req.id;
@@ -89,94 +93,110 @@ export const followUnFollowUser = async (req, res, next) => {
   }
 };
 
-// =============== 5. Upload User DP  ============================================================
-export const updateUserDisplayPicture = async (re, res, next) => {
-    try {
-        
-    } catch (error) {
-        next(error)   
+// =============== 5. Upload User Display Picture =================================================
+export const updateUserDisplayPicture = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: "No image provided" });
     }
-}
 
+    const user = await userModel.findById(req.id);
+    
+    // Delete old image from Cloudinary if exists
+    if (user.profilePhoto) {
+      const publicId = user.profilePhoto.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(`beta-communes/user-dp/${publicId}`);
+    }
 
+    // Upload new image to Cloudinary
+    const b64 = Buffer.from(req.file.buffer).toString("base64");
+    const dataURI = "data:" + req.file.mimetype + ";base64," + b64;
+    
+    const result = await cloudinary.uploader.upload(dataURI, {
+      folder: "beta-communes/user-dp",
+      public_id: `${req.id}_${Date.now()}`,
+      resource_type: "image"
+    });
 
+    // Update user profile photo
+    const updatedUser = await userModel.findByIdAndUpdate(
+      req.id,
+      { profilePhoto: result.secure_url },
+      { new: true }
+    ).select("-password");
 
+    res.status(200).json({
+      success: true,
+      message: "Profile picture updated",
+      user: updatedUser
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================= 6. GET USER POSTS ================================================
-//  GET: api/users/:id/posts
-// 
+// =============== 6. Get User Posts ==============================================================
 export const getUserPosts = async (req, res, next) => {
-    try {
-        const userId = req.id;
-        const posts = await userModel.findById(userId).populate({path:"posts", options:{sort:{createdAt:-1}}})
+  try {
+    const userId = req.params.id;
+    const user = await userModel.findById(userId).populate({
+      path: "posts",
+      options: { sort: { createdAt: -1 } },
+      populate: {
+        path: "creator",
+        select: "userName profilePhoto"
+      }
+    });
 
-        res.status(200).json({success:true, posts, message:"user posts"})
-    } catch (error) {
-        next(error)
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
-}
 
+    res.status(200).json({
+      success: true,
+      posts: user.posts,
+      message: "User posts retrieved successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ============================= 7. GET BOOKMARKS POSTS ================================================
-//  GET: /v1/user/bookmarks
-// PROTECTED
+// =============== 7. Get Bookmarks Posts =========================================================
 export const getUserBookMarks = async (req, res, next) => {
-    try {
-        const userId = req.params.id; 
-        
-        if (!mongoose.Types.ObjectId.isValid(userId)) {
-            return res.status(400).json({ success: false, message: "Invalid user ID" });
-        }
-
-        const user = await userModel.findById(userId)
-            .populate({
-                path: "bookmarks",
-                populate: {
-                    path: "creator",
-                    select: "userName _id profilePhoto"
-                },
-                options: { sort: { createdAt: -1 } }
-            });
-            
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        res.status(200).json({
-            success: true,
-            bookmarks: user.bookmarks,
-            message: "User bookmarked posts retrieved successfully"
-        });
-    } catch (error) {
-        console.error('Error fetching bookmarks:', error);
-        next(error);
+  try {
+    const userId = req.params.id;
+    
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid user ID" });
     }
-}
+
+    const user = await userModel.findById(userId)
+      .populate({
+        path: "bookmarks",
+        populate: [
+          {
+            path: "creator",
+            select: "userName _id profilePhoto"
+          },
+          {
+            path: "comments.user",
+            select: "userName profilePhoto"
+          }
+        ],
+        options: { sort: { createdAt: -1 } }
+      });
+      
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      bookmarks: user.bookmarks,
+      message: "Bookmarked posts retrieved successfully"
+    });
+  } catch (error) {
+    next(error);
+  }
+};

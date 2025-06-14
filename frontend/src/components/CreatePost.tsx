@@ -91,7 +91,7 @@ const CreatePost = ({ createNewPost, error }: CreatePostProps) => {
 
             <button
               type="submit"
-              className='px-3 py-1 rounded-md bg-primary text-gray-200'
+              className='web-parymary-btn px-3 py-1 rounded-md'
             >
               {"Post"}
             </button>

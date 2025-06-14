@@ -25,7 +25,7 @@ const Navbar = () => {
             placeholder="Search"
             className="outline-none border-none"
           />
-          <button type="submit" className="px-2 py-1 text-white font-bold bg-primary rounded-xl">
+          <button type="submit" className="px-2 py-1 text-white font-bold bg-primary rounded-xl web-parymary-btn">
             <CiSearch size={20} />
           </button>
         </form>
@@ -35,7 +35,7 @@ const Navbar = () => {
           {currentUser ? (
             <>
               <Link to={`/profile/${userId}`}>
-                <ProtileImage image={profilePhoto} />
+                <ProtileImage image={profilePhoto}  />
               </Link>
               <Link to='/logout'>Logout</Link>
             </>
