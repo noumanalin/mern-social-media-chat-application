@@ -21,7 +21,10 @@ export const setupSocket = (app) => {
     }
   });
 
+
+  // {client} = socket have client information
   io.on("connection", (socket) => {
+    // console.log("A New User has Connected " + socket.id)
     const userId = socket.handshake.query.userId;
 
     if (userId && userId !== 'undefined') {

@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../store/store';
 import { ImagePlus } from 'lucide-react';
-import ProfileImage from './ProtileImage';
+import ProfileImage from './ProfileImage';
 
 interface CreatePostProps {
   createNewPost: (formData: FormData) => void;

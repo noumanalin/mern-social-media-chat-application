@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import ProtileImage from './ProtileImage'
+import ProfileImage from './ProfileImage'
 import { Link } from 'react-router-dom'
 import TimeAgo from 'react-timeago'
 import LikeDislikePost from './LikeDislikePost'
@@ -47,7 +47,7 @@ const Feed: React.FC<FeedProps> = ({ post, onDelete, onEdit, isDeleting }) => {
     <article className=' p-2 rounded-md shadow-xl my-4 bg-white dark:bg-gray-600'>
       <header className='relative flex items-center justify-between'>
         <Link to={`/user/${post?.creator?._id}`} className='flex items-center gap-3'>
-          <ProtileImage image={post?.creator?.profilePhoto} />
+          <ProfileImage image={post?.creator?.profilePhoto} />
           <div>
             <h2 className='font-bold'>{post?.creator?.userName}</h2>
             <p>
@@ -73,7 +73,7 @@ const Feed: React.FC<FeedProps> = ({ post, onDelete, onEdit, isDeleting }) => {
             <TrimText text={post?.body} maxlength={160} />
           </figcaption>
         </Link>
-        {<img className='w-full h-auto max-h-[600px] object-g rounded-md' src={post.image} alt="Post content" loading="lazy"/>}
+        {<img className='w-full h-auto aspect-auto rounded-md my-5' src={post.image} alt="Post content" loading="lazy"/>}
       </figure>
       
       <footer className='flex items-center justify-between my-5'>

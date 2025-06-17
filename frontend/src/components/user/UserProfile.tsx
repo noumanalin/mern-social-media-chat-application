@@ -28,11 +28,11 @@ const UserProfile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-console.log(`UUSSEERR:::: ${loggedInUser?.__v}`)
-console.log(`UUSSEERR:::: ${loggedInUser?.bio}`)
-console.log(`UUSSEERR:::: ${loggedInUser?.createdAt}`)
-console.log(`UUSSEERR Location:::: ${loggedInUser?.location}`)
-console.log(`UUSSEERR loginHistory:::: ${loggedInUser?.loginHistory}`)
+// console.log(`UUSSEERR:::: ${loggedInUser?.__v}`)
+// console.log(`UUSSEERR:::: ${loggedInUser?.bio}`)
+// console.log(`UUSSEERR:::: ${loggedInUser?.createdAt}`)
+// console.log(`UUSSEERR Location:::: ${loggedInUser?.location}`)
+// console.log(`UUSSEERR loginHistory:::: ${loggedInUser?.loginHistory}`)
 
 
   const openModal = () => setIsOpen(true);

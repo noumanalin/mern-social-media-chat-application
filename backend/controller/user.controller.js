@@ -20,13 +20,14 @@ export const getUserProfileByID = async (req, res, next) => {
   }
 };
 
-// =============== 2. Get Registered Users ========================================================
+// =============== 2. Get Segisted Users ========================================================
 export const getSegistedUsers = async (req, res, next) => {
   try {
+    const userId = req.id;
     const users = await userModel.find({})
       .select("userName profilePhoto bio followers followings")
       .sort({ registeredAt: -1 })
-      .limit(20); // Limit to 20 recent users
+      .limit(10);
 
     res.status(200).json({ 
       success: true, 
@@ -34,6 +35,7 @@ export const getSegistedUsers = async (req, res, next) => {
       users 
     });
   } catch (error) {
+    console.error("getSegistedUsers Error:", error);
     next(error);
   }
 };

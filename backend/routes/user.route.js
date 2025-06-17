@@ -7,8 +7,8 @@ import upload from '../middleware/multer.js';
 const router = express.Router();
 
 
+router.get('/users',isLogedin, getSegistedUsers)
 router.get('/:id',   getUserProfileByID)
-router.get('/users', getSegistedUsers)
 router.patch('/:id', isLogedin, editProfile)
 router.get('/follow-unfollow/:id', isLogedin, followUnFollowUser)
 router.post('/upload/user-dp', isLogedin, upload.single('image'), updateUserDisplayPicture)

@@ -10,7 +10,7 @@ import userRouter from './routes/user.route.js';
 import postRouter from './routes/post.routes.js';
 import commentRouter from './routes/comment.route.js';
 import messageRouter from './routes/message.route.js';
-import { setupSocket } from './socket/socket.js'; // changed
+import { setupSocket } from './socket/socket.js'; 
 
 const app = express();
 

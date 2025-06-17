@@ -8,7 +8,7 @@ import BookMarkPosts from '../components/BookMarkPosts';
 import { MessageCircleMore, Send, Share2, Trash2 } from "lucide-react";
 import LikeDislikePost from "../components/LikeDislikePost";
 import TimeAgo from "react-timeago";
-import ProtileImage from "../components/ProtileImage";
+import ProtileImage from "../components/ProfileImage";
 
 interface Comment {
   _id: string;

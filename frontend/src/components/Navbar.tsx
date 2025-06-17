@@ -2,7 +2,7 @@ import { useSelector } from "react-redux"
 import type { RootState } from "../store/store"
 import { Link } from "react-router-dom"
 import { CiSearch } from "react-icons/ci" // ✅ Corrected import
-import ProtileImage from "./ProtileImage"
+import ProfileImage from "./ProfileImage"
 
 const Navbar = () => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
@@ -35,7 +35,7 @@ const Navbar = () => {
           {currentUser ? (
             <>
               <Link to={`/profile/${userId}`}>
-                <ProtileImage image={profilePhoto}  />
+                <ProfileImage image={profilePhoto}  />
               </Link>
               <Link to='/logout'>Logout</Link>
             </>
